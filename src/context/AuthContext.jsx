@@ -8,11 +8,21 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log('[AuthContext] Checking auth state...');
     const token = localStorage.getItem('token');
     const storedUser = localStorage.getItem('user');
     if (token && storedUser) {
+      console.log('[AuthContext] Token found, restoring user');
       setUser(JSON.parse(storedUser));
-      api.auth.me().then((data) => setUser(data.user)).catch(() => logout());
+      api.auth.me().then((data) => {
+        console.log('[AuthContext] api.auth.me success:', data);
+        setUser(data.user);
+      }).catch((err) => {
+        console.error('[AuthContext] api.auth.me failed:', err);
+        logout();
+      });
+    } else {
+      console.log('[AuthContext] No token in localStorage');
     }
     setLoading(false);
   }, []);

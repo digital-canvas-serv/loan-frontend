@@ -25,7 +25,7 @@ export function SiteHeader() {
             <div className="w-9 h-9 rounded-lg bg-emerald-700 flex items-center justify-center">
               <Shield className="w-5 h-5 text-white" />
             </div>
-            <span className="text-xl font-bold text-gray-900">Harbor</span>
+            <span className="text-xl font-bold text-gray-900">Coloan</span>
           </Link>
 
           <nav className="hidden md:flex items-center gap-1">

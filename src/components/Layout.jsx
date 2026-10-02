@@ -40,7 +40,7 @@ export function Layout() {
               <div className="w-8 h-8 rounded-lg bg-emerald-700 flex items-center justify-center">
                 <Shield className="w-5 h-5 text-white" />
               </div>
-              <span className="font-bold text-lg text-gray-900">Harbor</span>
+              <span className="font-bold text-lg text-gray-900">Coloan</span>
             </div>
             <button className="lg:hidden p-2 rounded-lg hover:bg-gray-100" onClick={() => setSidebarOpen(false)}>
               <X className="w-5 h-5" />

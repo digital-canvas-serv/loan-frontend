@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import { Layout } from './components/Layout';
 import { LoginPage } from './pages/auth/LoginPage';
+import { AdminLoginPage } from './pages/auth/AdminLoginPage';
 import { RegisterPage } from './pages/auth/RegisterPage';
 import { DashboardPage } from './pages/user/DashboardPage';
 import { LoansPage } from './pages/user/LoansPage';
@@ -28,8 +29,8 @@ import { NotFoundPage } from './pages/public/NotFoundPage';
 function Protected({ children, adminOnly = false }) {
   const { user, loading } = useAuth();
   if (loading) return <div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" /></div>;
-  if (!user) return <Navigate to="/login" replace />;
-  if (adminOnly && !['ADMIN', 'SUPER_ADMIN'].includes(user.role)) return <Navigate to="/dashboard" replace />;
+  if (!user) return <Navigate to={adminOnly ? '/admin/login' : '/login'} replace />;
+  if (adminOnly && !['ADMIN', 'SUPER_ADMIN'].includes(user.role)) return <Navigate to="/admin/login" replace />;
   return children;
 }
 
@@ -51,6 +52,7 @@ export default function App() {
       </Route>
       <Route path="/" element={<LandingRedirect />} />
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/admin/login" element={<AdminLoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
       <Route element={<Layout />}>
         <Route element={<Protected />}>

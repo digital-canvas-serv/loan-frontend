@@ -56,9 +56,9 @@ export function AboutUsPage() {
   return (
     <>
       <PageHero
-        eyebrow="About Harbor"
+        eyebrow="About Coloan"
         title="Borrow against what you own, not what someone else scores"
-        intro="Harbor is a collateral-backed lending platform. We lend against assets we can hold and verify — jewellery, vehicles, electronics and business equipment — so that access to finance does not depend entirely on a credit file."
+        intro="Coloan is a collateral-backed lending platform. We lend against assets we can hold and verify — jewellery, vehicles, electronics and business equipment — so that access to finance does not depend entirely on a credit file."
       >
         <div className="mt-8 flex flex-wrap gap-3">
           <Link to={user ? '/loans/new' : '/register'} className="btn-primary">
@@ -76,7 +76,7 @@ export function AboutUsPage() {
             before, and a missed payment years ago closes doors that take years to reopen.
           </p>
           <p>
-            Harbor removes that circularity. We assess the asset, we take possession, and we lend
+            Coloan removes that circularity. We assess the asset, we take possession, and we lend
             against the value of what we are actually holding. That means the decision rests on
             something verifiable instead of something inferred, and it is the same principle for
             every applicant regardless of who they are.
@@ -170,7 +170,7 @@ export function AboutUsPage() {
 
         <Section title="Who this platform is for">
           <p>
-            Harbor suits people and small businesses who hold a verifiable asset and want
+            Coloan suits people and small businesses who hold a verifiable asset and want
             predictable, itemised finance rather than revolving debt. It is a poor fit if you want
             unsecured credit, if you cannot evidence ownership of the asset, or if you need funds
             the same day — verification and appraisal exist precisely to protect both sides, and

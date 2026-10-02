@@ -24,13 +24,18 @@ export function AdminDashboardPage() {
   const [error, setError] = useState('');
 
   useEffect(() => {
+    console.log('[AdminDashboardPage] useEffect triggered');
     Promise.all([api.admin.dashboard(), api.admin.users({ page: 1, pageSize: 6, status: 'PENDING' })])
       .then(([dashboard, pending]) => {
+        console.log('[AdminDashboardPage] API success:', { dashboard, pending });
         setMetrics(dashboard.metrics || {});
         setUsers(pending.users || []);
         setError('');
       })
-      .catch((err) => setError(err.message))
+      .catch((err) => {
+        console.error('[AdminDashboardPage] API error:', err);
+        setError(err.message);
+      })
       .finally(() => setLoading(false));
   }, []);
 

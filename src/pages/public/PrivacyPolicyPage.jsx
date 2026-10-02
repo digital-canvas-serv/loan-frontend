@@ -11,7 +11,7 @@ export function PrivacyPolicyPage() {
       <PageHero
         eyebrow="Legal"
         title="Privacy Policy"
-        intro="How Harbor collects, uses, stores and protects your personal information, and what you can require us to do with it."
+        intro="How Coloan collects, uses, stores and protects your personal information, and what you can require us to do with it."
       >
         <p className="mt-6 text-sm text-gray-500">{EFFECTIVE}</p>
       </PageHero>
@@ -19,7 +19,7 @@ export function PrivacyPolicyPage() {
       <Prose>
         <Section title="1. Who we are">
           <p>
-            Harbor operates a collateral-backed lending platform. In this policy, &ldquo;Harbor&rdquo;,
+            Coloan operates a collateral-backed lending platform. In this policy, &ldquo;Coloan&rdquo;,
             &ldquo;we&rdquo;, &ldquo;us&rdquo; and &ldquo;our&rdquo; mean the entity that operates this platform, and
             &ldquo;you&rdquo; means a prospective applicant, registered borrower, or any administrator who
             uses the platform in that capacity.

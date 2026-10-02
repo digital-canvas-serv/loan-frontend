@@ -33,18 +33,26 @@ export function AdminPaymentsPage() {
   const toast = useToast();
 
   const load = useCallback(() => {
+    console.log('[AdminPaymentsPage] load() called, page:', page);
     setLoading(true);
     api.repayments.list({ page, pageSize: 20 })
       .then((data) => {
+        console.log('[AdminPaymentsPage] API success:', data);
         setPayments(data.payments || []);
         setPagination(data.pagination || null);
         setError('');
       })
-      .catch((err) => setError(err.message))
+      .catch((err) => {
+        console.error('[AdminPaymentsPage] API error:', err);
+        setError(err.message);
+      })
       .finally(() => setLoading(false));
   }, [page]);
 
-  useEffect(load, [load]);
+  useEffect(() => {
+    console.log('[AdminPaymentsPage] useEffect triggered, load:', load);
+    load();
+  }, [load]);
 
   const visible = status ? payments.filter((payment) => payment.status === status) : payments;
   const pendingCount = payments.filter((payment) => payment.status === 'PENDING').length;

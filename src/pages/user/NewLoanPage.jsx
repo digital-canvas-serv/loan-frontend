@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { api } from '../../services/api';
-import { ArrowLeft, ArrowRight, Upload, AlertCircle, Shield } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Upload, AlertCircle, Shield, X } from 'lucide-react';
 
 const initialForm = {
   loanProductId: '',
@@ -33,6 +33,8 @@ export function NewLoanPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
+  const dropzoneRef = useRef(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -78,6 +80,31 @@ export function NewLoanPage() {
   };
 
   const setField = (key, value) => setForm({ ...form, [key]: value });
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setDragActive(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    setDragActive(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setDragActive(false);
+    const newFiles = Array.from(e.dataTransfer.files).slice(0, 5);
+    setFiles((prev) => [...prev, ...newFiles].slice(0, 5));
+  };
+
+  const handleFileSelect = (e) => {
+    setFiles(Array.from(e.target.files).slice(0, 5));
+  };
+
+  const removeFile = (index) => {
+    setFiles((prev) => prev.filter((_, i) => i !== index));
+  };
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
@@ -286,24 +313,30 @@ export function NewLoanPage() {
             <div className="field md:col-span-2">
               <label className="label">Photos & Supporting Documents *</label>
               <div
-                className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-emerald-400 transition-colors relative"
-                onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('border-emerald-400'); }}
-                onDragLeave={(e) => { e.currentTarget.classList.remove('border-emerald-400'); }}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  e.currentTarget.classList.remove('border-emerald-400');
-                  const newFiles = Array.from(e.dataTransfer.files).slice(0, 5);
-                  setFiles((prev) => [...prev, ...newFiles].slice(0, 5));
-                }}
+                ref={dropzoneRef}
+                className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+                  dragActive ? 'border-emerald-500 bg-emerald-50' : 'border-gray-300 hover:border-emerald-400'
+                } ${submitting ? 'opacity-60' : ''}`}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
               >
                 <Upload className="w-8 h-8 mx-auto text-gray-400 mb-2" />
                 <p className="text-sm text-gray-600">Drag & drop PDF, JPG, or PNG files (max 5, 5MB each)</p>
+                <button
+                  type="button"
+                  className="btn-secondary btn-sm mt-3"
+                  onClick={() => dropzoneRef.current?.querySelector('input')?.click()}
+                  disabled={submitting || files.length >= 5}
+                >
+                  Browse files
+                </button>
                 <input
                   type="file"
                   multiple
                   accept="application/pdf,image/jpeg,image/png"
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  onChange={(e) => setFiles(Array.from(e.target.files).slice(0, 5))}
+                  className="hidden"
+                  onChange={handleFileSelect}
                   disabled={submitting}
                 />
               </div>
@@ -311,11 +344,22 @@ export function NewLoanPage() {
                 <div className="mt-3 space-y-2">
                   {files.map((file, i) => (
                     <div key={i} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
-                      <div className="flex items-center gap-2">
-                        <Upload className="w-4 h-4 text-gray-400" />
+                      <div className="flex items-center gap-2 min-w-0">
+                        <Upload className="w-4 h-4 text-gray-400 flex-shrink-0" />
                         <span className="text-sm text-gray-700 truncate max-w-[200px]">{file.name}</span>
                       </div>
-                      <span className="text-xs text-gray-500 ml-2">{(file.size / 1024).toFixed(1)} KB</span>
+                      <div className="flex items-center gap-2 ml-2 flex-shrink-0">
+                        <span className="text-xs text-gray-500">{(file.size / 1024).toFixed(1)} KB</span>
+                        <button
+                          type="button"
+                          onClick={() => removeFile(i)}
+                          className="text-gray-400 hover:text-red-600"
+                          aria-label={`Remove ${file.name}`}
+                          disabled={submitting}
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>

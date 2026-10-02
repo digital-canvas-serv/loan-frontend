@@ -1,4 +1,11 @@
-const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:4000/api');
+// API Configuration
+// Set VITE_API_URL in Vercel Dashboard → Settings → Environment Variables
+// Example: https://loanapi.vercel.app/api
+const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD 
+  ? 'https://loanapi.vercel.app/api' 
+  : 'http://localhost:4000/api');
+
+console.log('[API] Using API_URL:', API_URL);
 
 function buildQuery(params = {}) {
   const search = new URLSearchParams();

@@ -50,7 +50,7 @@ export function NotFoundPage() {
           <h2 className="text-sm font-semibold text-gray-900">You might have wanted</h2>
           <ul className="mt-3 space-y-2">
             {[
-              { to: '/about', label: 'About Harbor — how collateral-backed lending works' },
+              { to: '/about', label: 'About Coloan — how collateral-backed lending works' },
               { to: '/privacy', label: 'Privacy Policy — what we collect and why' },
               { to: '/terms', label: 'Terms & Conditions — the rules for every loan' },
             ].map(({ to, label }) => (

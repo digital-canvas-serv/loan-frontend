@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { Shield, Mail, Lock, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Shield, Mail, Lock, AlertCircle, ArrowLeft } from 'lucide-react';
 
-export function LoginPage() {
+export function AdminLoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -38,8 +38,16 @@ export function LoginPage() {
 
     setLoading(true);
     try {
-      await login(email, password);
-      navigate('/dashboard');
+      const data = await login(email, password);
+      // Verify admin role
+      if (!['ADMIN', 'SUPER_ADMIN'].includes(data.user?.role)) {
+        setError('Admin access required. Invalid credentials.');
+        // Logout the non-admin user
+        const { logout } = await import('../../context/AuthContext');
+        logout();
+        return;
+      }
+      navigate('/admin');
     } catch (err) {
       setError(err.message);
     } finally {
@@ -51,14 +59,18 @@ export function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
+          <Link to="/" className="btn-ghost inline-flex items-center gap-2 mb-6">
+            <ArrowLeft className="w-4 h-4" />
+            Back to site
+          </Link>
           <Link to="/" className="inline-flex items-center gap-2">
             <div className="w-10 h-10 rounded-lg bg-emerald-700 flex items-center justify-center">
               <Shield className="w-6 h-6 text-white" />
             </div>
             <span className="text-2xl font-bold text-gray-900">Coloan</span>
           </Link>
-          <h1 className="mt-6 text-3xl font-bold text-gray-900">Welcome back</h1>
-          <p className="mt-2 text-gray-500">Sign in to your account</p>
+          <h1 className="mt-6 text-3xl font-bold text-gray-900">Admin Sign In</h1>
+          <p className="mt-2 text-gray-500">Secure administrator access</p>
         </div>
         <div className="card">
           <form onSubmit={handleSubmit} className="space-y-5">
@@ -78,7 +90,7 @@ export function LoginPage() {
                   className="input pl-10"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
+                  placeholder="admin@coloan.example"
                   required
                   disabled={loading}
                   autoComplete="email"
@@ -105,11 +117,11 @@ export function LoginPage() {
               <p className="text-xs text-gray-400">Must be at least 8 characters</p>
             </div>
             <button type="submit" className="btn-primary w-full" disabled={loading}>
-              {loading ? 'Signing in...' : 'Sign in'}
+              {loading ? 'Signing in...' : 'Sign in as Admin'}
             </button>
           </form>
           <p className="mt-6 text-center text-sm text-gray-500">
-            Don't have an account? <Link to="/register" className="text-emerald-700 font-medium hover:underline">Create one</Link>
+            Not an admin? <Link to="/login" className="text-emerald-700 font-medium hover:underline">User login</Link>
           </p>
         </div>
       </div>

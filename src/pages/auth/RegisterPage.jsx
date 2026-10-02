@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { Shield, Mail, Lock, User, AlertCircle, Upload } from 'lucide-react';
@@ -24,20 +24,53 @@ export function RegisterPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
+  const dropzoneRef = useRef(null);
   const { register } = useAuth();
   const navigate = useNavigate();
 
+  const validateEmail = (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
+  const validatePhone = (phone) => {
+    if (!phone) return true; // optional
+    return /^[\+]?[(]?[0-9]{1,3}[)]?[-\s\.]?[(]?[0-9]{1,3}[)]?[-\s\.]?[0-9]{4,6}$/.test(phone);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (form.password !== form.confirmPassword) {
-      setError('Passwords do not match');
+    setError('');
+
+    if (!form.name.trim()) {
+      setError('Full name is required');
+      return;
+    }
+    if (!form.email.trim()) {
+      setError('Email is required');
+      return;
+    }
+    if (!validateEmail(form.email)) {
+      setError('Please enter a valid email address');
+      return;
+    }
+    if (!form.password) {
+      setError('Password is required');
       return;
     }
     if (form.password.length < 8) {
       setError('Password must be at least 8 characters');
       return;
     }
-    setError('');
+    if (form.password !== form.confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+    if (form.phone && !validatePhone(form.phone)) {
+      setError('Please enter a valid phone number');
+      return;
+    }
+
     setLoading(true);
     try {
       const formData = new FormData();
@@ -60,6 +93,31 @@ export function RegisterPage() {
     }
   };
 
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setDragActive(true);
+  };
+
+  const handleDragLeave = (e) => {
+    e.preventDefault();
+    setDragActive(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setDragActive(false);
+    const files = Array.from(e.dataTransfer.files).slice(0, 5);
+    setDocuments((prev) => [...prev, ...files].slice(0, 5));
+  };
+
+  const handleFileSelect = (e) => {
+    setDocuments(Array.from(e.target.files).slice(0, 5));
+  };
+
+  const removeDocument = (index) => {
+    setDocuments((prev) => prev.filter((_, i) => i !== index));
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12">
       <div className="w-full max-w-2xl">
@@ -68,7 +126,7 @@ export function RegisterPage() {
             <div className="w-10 h-10 rounded-lg bg-emerald-700 flex items-center justify-center">
               <Shield className="w-6 h-6 text-white" />
             </div>
-            <span className="text-2xl font-bold text-gray-900">Harbor</span>
+            <span className="text-2xl font-bold text-gray-900">Coloan</span>
           </Link>
           <h1 className="mt-6 text-3xl font-bold text-gray-900">Create your profile</h1>
           <p className="mt-2 text-gray-500">Submit your details for administrator review</p>
@@ -137,6 +195,7 @@ export function RegisterPage() {
                     disabled={loading}
                   />
                 </div>
+                <p className="text-xs text-gray-400">Must be at least 8 characters</p>
               </div>
               <div className="field">
                 <label className="label" htmlFor="confirmPassword">Confirm Password *</label>
@@ -253,25 +312,30 @@ export function RegisterPage() {
             <div className="field">
               <label className="label">Supporting Documents (KYC)</label>
               <div
-                className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-emerald-400 transition-colors"
-                onDragOver={(e) => { e.preventDefault(); e.currentTarget.classList.add('border-emerald-400'); }}
-                onDragLeave={(e) => { e.currentTarget.classList.remove('border-emerald-400'); }}
-                onDrop={(e) => {
-                  e.preventDefault();
-                  e.currentTarget.classList.remove('border-emerald-400');
-                  const files = Array.from(e.dataTransfer.files).slice(0, 5);
-                  setDocuments((prev) => [...prev, ...files].slice(0, 5));
-                }}
+                ref={dropzoneRef}
+                className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+                  dragActive ? 'border-emerald-500 bg-emerald-50' : 'border-gray-300 hover:border-emerald-400'
+                } ${loading ? 'opacity-60' : ''}`}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
               >
                 <Upload className="w-8 h-8 mx-auto text-gray-400 mb-2" />
                 <p className="text-sm text-gray-600">Drag & drop PDF, JPG, or PNG files (max 5, 5MB each)</p>
-                <p className="text-xs text-gray-400 mt-1">or click to browse</p>
+                <button
+                  type="button"
+                  className="btn-secondary btn-sm mt-3"
+                  onClick={() => dropzoneRef.current?.querySelector('input')?.click()}
+                  disabled={loading || documents.length >= 5}
+                >
+                  Browse files
+                </button>
                 <input
                   type="file"
                   multiple
                   accept="application/pdf,image/jpeg,image/png"
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  onChange={(e) => setDocuments(Array.from(e.target.files).slice(0, 5))}
+                  className="hidden"
+                  onChange={handleFileSelect}
                   disabled={loading}
                 />
               </div>
@@ -279,8 +343,22 @@ export function RegisterPage() {
                 <div className="mt-3 space-y-2">
                   {documents.map((file, i) => (
                     <div key={i} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
-                      <span className="text-sm text-gray-700 truncate max-w-[200px]">{file.name}</span>
-                      <span className="text-xs text-gray-500 ml-2">{(file.size / 1024).toFixed(1)} KB</span>
+                      <div className="flex items-center gap-2 min-w-0">
+                        <Upload className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                        <span className="text-sm text-gray-700 truncate max-w-[200px]">{file.name}</span>
+                      </div>
+                      <div className="flex items-center gap-2 ml-2 flex-shrink-0">
+                        <span className="text-xs text-gray-500">{(file.size / 1024).toFixed(1)} KB</span>
+                        <button
+                          type="button"
+                          onClick={() => removeDocument(i)}
+                          className="text-gray-400 hover:text-red-600"
+                          aria-label={`Remove ${file.name}`}
+                          disabled={loading}
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>

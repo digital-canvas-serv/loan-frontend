@@ -33,11 +33,11 @@ export function SiteFooter() {
               <div className="w-9 h-9 rounded-lg bg-emerald-700 flex items-center justify-center">
                 <Shield className="w-5 h-5 text-white" />
               </div>
-              <span className="text-xl font-bold text-white">Harbor</span>
+              <span className="text-xl font-bold text-white">Coloan</span>
             </div>
             <p className="mt-4 text-sm leading-relaxed">
               Asset-backed lending for people and small businesses. Every loan is secured by
-              collateral that we physically verify before a rupee is released.
+              collateral that we physically verify before funds are released.
             </p>
           </div>
 
@@ -96,7 +96,7 @@ export function SiteFooter() {
       <div className="border-t border-gray-800">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 py-6">
           <p className="text-xs text-gray-500 leading-relaxed">
-            &copy; {new Date().getFullYear()} Harbor. All rights reserved. Lending is subject to
+            &copy; {new Date().getFullYear()} Coloan. All rights reserved. Lending is subject to
             identity verification, collateral appraisal and approval. Figures shown on this site
             are illustrative and do not constitute a credit offer &mdash; the binding terms for
             each loan are set out in your approval letter and the Terms &amp; Conditions.
