@@ -42,18 +42,26 @@ export function AdminUsersPage() {
   const toast = useToast();
 
   const load = useCallback(() => {
+    console.log('[AdminUsersPage] load() called, page:', page, 'search:', search, 'status:', status);
     setLoading(true);
     api.admin.users({ page, pageSize: 20, search, status })
       .then((data) => {
+        console.log('[AdminUsersPage] API success:', data);
         setUsers(data.users || []);
         setPagination(data.pagination || null);
         setError('');
       })
-      .catch((err) => setError(err.message))
+      .catch((err) => {
+        console.error('[AdminUsersPage] API error:', err);
+        setError(err.message);
+      })
       .finally(() => setLoading(false));
   }, [page, search, status]);
 
-  useEffect(load, [load]);
+  useEffect(() => {
+    console.log('[AdminUsersPage] useEffect triggered, load:', load);
+    load();
+  }, [load]);
 
   useEffect(() => {
     const next = {};
