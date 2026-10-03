@@ -3,6 +3,16 @@ import { api } from '../services/api';
 
 const AuthContext = createContext(null);
 
+// Standalone logout function for direct import
+export const logout = async () => {
+  try {
+    await api.auth.logout();
+  } finally {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+  }
+};
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -43,16 +53,6 @@ export function AuthProvider({ children }) {
       setUser(data.user);
     }
     return data;
-  };
-
-  const logout = async () => {
-    try {
-      await api.auth.logout();
-    } finally {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      setUser(null);
-    }
   };
 
   const updateUser = (updatedUser) => {

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth, logout } from '../../context/AuthContext';
 import { Shield, Mail, Lock, AlertCircle, ArrowLeft } from 'lucide-react';
 
 export function AdminLoginPage() {
@@ -43,8 +43,7 @@ export function AdminLoginPage() {
       if (!['ADMIN', 'SUPER_ADMIN'].includes(data.user?.role)) {
         setError('Admin access required. Invalid credentials.');
         // Logout the non-admin user
-        const { logout } = await import('../../context/AuthContext');
-        logout();
+        await logout();
         return;
       }
       navigate('/admin');
