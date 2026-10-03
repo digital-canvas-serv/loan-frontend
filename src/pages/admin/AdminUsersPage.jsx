@@ -19,6 +19,7 @@ import { useAuth } from '../../context/AuthContext';
 const statuses = ['PENDING', 'APPROVED', 'REJECTED', 'SUSPENDED', 'BLOCKED'];
 
 export function AdminUsersPage() {
+  console.log('[AdminUsersPage] Component function called');
   const { user: currentUser } = useAuth();
   const isSuperAdmin = currentUser?.role === 'SUPER_ADMIN';
   const [searchParams, setSearchParams] = useSearchParams();

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { Shield, Mail, Lock, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Shield, Mail, Lock, AlertCircle, CheckCircle2, UserCheck } from 'lucide-react';
 
 export function LoginPage() {
   const [email, setEmail] = useState('');
@@ -38,7 +38,16 @@ export function LoginPage() {
 
     setLoading(true);
     try {
-      await login(email, password);
+      const data = await login(email, password);
+      // Check if user is admin - redirect to admin login
+      if (data.user && ['ADMIN', 'SUPER_ADMIN'].includes(data.user.role)) {
+        setError('Administrators must use the admin portal. Redirecting...');
+        // Logout the admin user
+        const { logout } = await import('../../context/AuthContext');
+        await logout();
+        setTimeout(() => navigate('/admin/login'), 1500);
+        return;
+      }
       navigate('/dashboard');
     } catch (err) {
       setError(err.message);

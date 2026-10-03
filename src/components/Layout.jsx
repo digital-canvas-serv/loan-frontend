@@ -31,6 +31,8 @@ export function Layout() {
 
   const navItems = ['ADMIN', 'SUPER_ADMIN'].includes(user?.role) ? adminNav : userNav;
 
+  console.log('[Layout] Rendering, user:', user ? { role: user.role, name: user.name } : null, 'path:', location.pathname);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <aside className={`sidebar ${sidebarOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
